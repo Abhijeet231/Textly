@@ -1,6 +1,7 @@
 import express, {type Express} from "express";
 import cors from "cors"
 import cookieParser from "cookie-parser";
+import { env } from "./types/env.js";
 
 const createApp = ():Express => {
 
@@ -12,7 +13,7 @@ const createApp = ():Express => {
    
 
     app.use(cors({
-        origin: process.env.CORS_ORIGIN,
+        origin: env.CORS_ORIGIN,
         credentials: true
     }))
     app.use(express.urlencoded({extended:true}))

@@ -18,14 +18,6 @@ const envSchema = z.object({
 
   CORS_ORIGIN: z.string().url(),
 
-  SMTP_HOST:z.email().trim().toLowerCase(),
-  SMTP_PORT: z.string(), 
-  SMTP_FROM_NAME: z.string(),
-  SMTP_FROM_EMAIL: z.email(),
-  CLIENT_URL: z.string(),
-  SMTP_USER: z.string(),
-  SMTP_PASS: z.string(),
-
 });
 
 
