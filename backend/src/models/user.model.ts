@@ -1,20 +1,22 @@
-import mongoose, {type HydratedDocument} from "mongoose";
+import mongoose, { type HydratedDocument } from "mongoose";
 
 import bcrypt from "bcryptjs";
 
 
 // Defining Interface for User
-interface IUser  {
-    name: string,
-    email: string,
-    password: string,
-    refreshToken?: string,
+interface IUser {
+    name: string;
+    email: string;
+    password: string;
+    refreshToken?: string;
     avatar?: {
         url?: string,
         public_id?: string,
     },
-    isOnline: boolean,
-    lastSeen?: Date
+    isOnline: boolean;
+    lastSeen?: Date;
+    createdAt?: Date;
+    updatedAt?: Date;
 
     comparePassword(clearTextPassword: string): Promise<boolean>
 }
@@ -22,7 +24,7 @@ interface IUser  {
 type UserDocument = HydratedDocument<IUser>
 
 
-const userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema<IUser>({
     name: {
         type: String,
         required: [true, "Name is required!"],
@@ -79,7 +81,7 @@ userSchema.methods.comparePassword = async function (
 }
 
 // Typed Model
-const User = mongoose.model<IUser> ("User", userSchema);
+const User = mongoose.model<IUser>("User", userSchema);
 
 
 export default User;
