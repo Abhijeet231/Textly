@@ -1,4 +1,4 @@
-import {type Request } from "express";
+import { type Multer } from "multer";
 
 declare global {
   namespace Express {
@@ -7,6 +7,9 @@ declare global {
         id: string;
         email: string;
       };
+      file?: Express.Multer.File;
     }
   }
 }
+
+export {};
