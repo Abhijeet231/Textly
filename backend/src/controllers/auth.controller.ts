@@ -1,6 +1,3 @@
-// register
-// login
-// logout
 // refresh accesstoken
 // get current user
 
@@ -106,68 +103,118 @@ export const registerController = async (req: Request, res: Response): Promise<v
    POST  /api/v1/auth/login 
  */
 
-export const loginController = async (req: Request, res: Response): Promise<void> => {
-    try {
+export const loginController = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { email, password } = req.body;
 
-        const { email, password } = req.body;
+    const user = await User.findOne({ email });
 
-        // find user
-        const user = await User.findOne({ email });
-        if (!user) {
-            res.status(409).json({
-                success: false,
-                message: "user not found!"
-            });
-            return;
-        }
-
-        // checkign password
-        let checkPass = await user.comparePassword(password);
-        if (!checkPass) {
-            res.status(409).json({
-                success: false,
-                message: "Invalid Credentials"
-            });
-            return;
-        }
-
-        // payload
-        const payload = {
-            id: user._id.toString(),
-            email: user.email
-        }
-
-        // Generate Tokens
-        const accessToken = generateAccessToken(payload);
-        const refreshToken = generateRefreshToken(payload);
-
-        // save refreshToken & change online status
-        user.refreshToken = refreshToken;
-        user.isOnline = true;
-
-        await user.save();
-
-        res.status(200).json({
-            success: true,
-            message: "User Loggedin Successfully.",
-            accessToken,
-            refreshToken,
-            user:{
-                _id: user._id,
-                name: user.name,
-                email: user.email,
-                avatar: user.avatar,
-                isOnline: user.isOnline,
-            }
-        })
-
-
-    } catch (error) {
-            console.error("Login Error:", error);
-
-            res.status(500).json({
-                success: false,
-                message: "Internal Server Error"
-            })
+    if (!user) {
+      res.status(404).json({
+        success: false,
+        message: "User not found!",
+      });
+      return;
     }
-}
+
+    const checkPass = await user.comparePassword(password);
+
+    if (!checkPass) {
+      res.status(401).json({
+        success: false,
+        message: "Invalid Credentials",
+      });
+      return;
+    }
+
+    // Payload for token generation
+    const payload = {
+      id: user._id.toString(),
+      email: user.email,
+    };
+
+    // Generating Tokens
+    const accessToken = generateAccessToken(payload);
+    const refreshToken = generateRefreshToken(payload);
+
+    // Addign refreshToken & changing online status
+    user.refreshToken = refreshToken;
+    user.isOnline = true;
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "User Logged in Successfully.",
+      accessToken,
+      refreshToken,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+        isOnline: user.isOnline,
+      },
+    });
+  } catch (error) {
+    console.error("Login Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+
+
+/**   LOGOUT USER
+ 
+   POST  /api/v1/auth/logout 
+ */
+export const logoutController = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+
+    if(!req.user){
+        res.status(401).json({
+            success: false,
+            message: "Unauthorized"
+        });
+        return;
+    }
+
+    const userId = req.user.id;
+
+    await User.findByIdAndUpdate(userId, {
+      refreshToken: undefined,
+      isOnline: false,
+      lastSeen: new Date(),
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "User logged out successfully",
+    });
+  } catch (error) {
+    console.error("Logout Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+
+/**   REFRESH USER'S ACCESS TOEKN
+ 
+   POST  /api/v1/auth/logout 
+ */
+// https://chatgpt.com/s/t_69e911e3d1d4819196cdb33b3e37ba04
+export const refreshCOntroller = async(req)
