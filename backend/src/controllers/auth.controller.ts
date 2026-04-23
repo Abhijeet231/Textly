@@ -1,107 +1,104 @@
-// refresh accesstoken
-// get current user
 
 import User from "../models/user.model.js"
-import { generateAccessToken, generateRefreshToken } from "../utils/jwt.utils.js"
+import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../utils/jwt.utils.js"
 import { type Request, type Response } from "express"
-import { type AuthPayload } from "../utils/jwt.utils.js"
 import { uploadOnCloudinary } from "../utils/cloudinary.js"
 
 
 /**   REGISTER USER
  
-   POST  /api/v1/auth/register 
- */
+POST  /api/v1/auth/register 
+ **/
 export const registerController = async (req: Request, res: Response): Promise<void> => {
-    try {
+  try {
 
-        // Get data
-        const { name, email, password } = req.body;
-
-
-        // checking existing user
-        const existingUser = await User.findOne({ email });
-
-        if (existingUser) {
-            res.status(409).json({
-                success: false,
-                message: "User already exists with this email"
-            });
-            return;
-        }
-
-        // Profile Image handing
-        let avatarData = {};
-
-        if (req.file?.path) {
-            const uploaded = await uploadOnCloudinary(
-                req.file.path,
-                "Textly/profile"
-            );
-
-            if (uploaded) {
-                avatarData = {
-                    url: uploaded.secure_url,
-                    public_id: uploaded.public_id
-                };
-            }
-        }
+    // Get data
+    const { name, email, password } = req.body;
 
 
-        // Create new user & save it 
-        const user = await User.create({
-            name,
-            email,
-            password,
-            avatar: avatarData,
-            isOnline: true,
+    // checking existing user
+    const existingUser = await User.findOne({ email });
 
-        })
-
-        // payload
-        const payload = {
-            id: user._id.toString(),
-            email: user.email,
-        };
-
-        // Generate Tokens
-        const accessToken = generateAccessToken(payload);
-        const refreshToken = generateRefreshToken(payload);
-
-        // Save refreshToken in the DB
-        user.refreshToken = refreshToken;
-        await user.save();
-
-        // send user details along with access and refreshtoknes
-        res.status(201).json({
-            success: true,
-            message: "User registered successfully",
-            accessToken,
-            refreshToken,
-            user: {
-                _id: user._id,
-                name: user.name,
-                email: user.email,
-                avatar: user.avatar,
-                isOnline: user.isOnline,
-            }
-        })
-
-    } catch (error) {
-        console.error("Register Error:", error);
-
-        res.status(500).json({
-            success: false,
-            message: "Internal Server error",
-        });
+    if (existingUser) {
+      res.status(409).json({
+        success: false,
+        message: "User already exists with this email"
+      });
+      return;
     }
+
+    // Profile Image handing
+    let avatarData = {};
+
+    if (req.file?.path) {
+      const uploaded = await uploadOnCloudinary(
+        req.file.path,
+        "Textly/profile"
+      );
+
+      if (uploaded) {
+        avatarData = {
+          url: uploaded.secure_url,
+          public_id: uploaded.public_id
+        };
+      }
+    }
+
+
+    // Create new user & save it 
+    const user = await User.create({
+      name,
+      email,
+      password,
+      avatar: avatarData,
+      isOnline: true,
+
+    })
+
+    // payload
+    const payload = {
+      id: user._id.toString(),
+      email: user.email,
+    };
+
+    // Generate Tokens
+    const accessToken = await generateAccessToken(payload);
+    const refreshToken = await generateRefreshToken(payload);
+
+    // Save refreshToken in the DB
+    user.refreshToken = refreshToken;
+    await user.save();
+
+    // send user details along with access and refreshtoknes
+    res.status(201).json({
+      success: true,
+      message: "User registered successfully",
+      accessToken,
+      refreshToken,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+        isOnline: user.isOnline,
+      }
+    })
+
+  } catch (error) {
+    console.error("Register Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Internal Server error",
+    });
+  }
 };
 
 
 /**   LOGIN USER
  
-   POST  /api/v1/auth/login 
- */
+POST  /api/v1/auth/login 
+ **/
 
 export const loginController = async (
   req: Request,
@@ -137,8 +134,8 @@ export const loginController = async (
     };
 
     // Generating Tokens
-    const accessToken = generateAccessToken(payload);
-    const refreshToken = generateRefreshToken(payload);
+    const accessToken = await generateAccessToken(payload);
+    const refreshToken = await generateRefreshToken(payload);
 
     // Addign refreshToken & changing online status
     user.refreshToken = refreshToken;
@@ -173,20 +170,20 @@ export const loginController = async (
 
 /**   LOGOUT USER
  
-   POST  /api/v1/auth/logout 
- */
+POST  /api/v1/auth/logout 
+ **/
 export const logoutController = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   try {
 
-    if(!req.user){
-        res.status(401).json({
-            success: false,
-            message: "Unauthorized"
-        });
-        return;
+    if (!req.user) {
+      res.status(401).json({
+        success: false,
+        message: "Unauthorized"
+      });
+      return;
     }
 
     const userId = req.user.id;
@@ -214,7 +211,67 @@ export const logoutController = async (
 
 /**   REFRESH USER'S ACCESS TOEKN
  
-   POST  /api/v1/auth/logout 
- */
-// https://chatgpt.com/s/t_69e911e3d1d4819196cdb33b3e37ba04
-export const refreshCOntroller = async(req)
+POST  /api/v1/auth/logout 
+ **/
+export const refreshUser = async (req: Request, res: Response) => {
+
+  try {
+    //get the user details from the req.header
+    let token;
+    if (req.headers.authorization && req.headers.authorization.startsWith("Bearer ")) {
+      token = req.headers.authorization.split(" ")[1]
+    }
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "Refresh token missing"
+      });
+    }
+
+    // Verify Token
+    let verified = await verifyRefreshToken(token);
+
+    if (!verified) {
+      return res.status(401).json({
+        success: false,
+        message: "Token not verified"
+      })
+    }
+
+
+    // find user from DB.
+    const user = await User.findById(verified.id).select("+refreshToken")
+
+    if (!user || user.refreshToken !== token) {
+      res.status(401).json({
+        success: false,
+        message: "Invalid refresh token"
+      })
+      return;
+    }
+
+
+    const payload = {
+      id: user._id.toString(),
+      email: user.email
+    }
+
+    const newAccessToken = generateAccessToken(payload);
+
+
+    res.status(200).json({
+      success: true,
+      message: "Token Refreshed",
+      newAccessToken
+    })
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      message: "Invalid refresh token+"
+    })
+  }
+
+
+}
+

@@ -2,6 +2,7 @@ import express, {type Express} from "express";
 import cors from "cors"
 import cookieParser from "cookie-parser";
 import { env } from "./types/env.js";
+import authRoutes from "./routes/auth.routes.js"
 
 const createApp = ():Express => {
 
@@ -21,6 +22,7 @@ const createApp = ():Express => {
     app.use(cookieParser());
 
     // Routes
+    app.use("/api/v1/auth", authRoutes);
 
 
     return app;
