@@ -3,6 +3,7 @@ import cors from "cors"
 import cookieParser from "cookie-parser";
 import { env } from "./types/env.js";
 import authRoutes from "./routes/auth.routes.js"
+import userRoutes from "./routes/user.routes.js"
 
 const createApp = ():Express => {
 
@@ -23,6 +24,7 @@ const createApp = ():Express => {
 
     // Routes
     app.use("/api/v1/auth", authRoutes);
+    app.use("/api/v1/users", userRoutes);
 
 
     return app;
