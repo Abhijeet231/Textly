@@ -2,7 +2,6 @@ import "dotenv/config";
 import createApp from "./app.js";
 import dbConnect from "./db/dbConnect.js";
 import http from "node:http";
-import { Server } from "socket.io";
 import { env } from "./types/env.js";
 import { initSocket } from "./sockets/index.js";
 

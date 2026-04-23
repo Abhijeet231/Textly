@@ -1,12 +1,5 @@
-// GET - /users?search=abhi - search user
-// GET - /users/:id - get user profile
-// GET - /users/online - get all online users
-
-// Get Current User - GET /users/me
-
 import User from "../models/user.model.js";
 import { type Request, type Response } from "express";
-import { verifyAccessToken } from "../utils/jwt.utils.js";
 import mongoose from "mongoose";
 
 
@@ -106,11 +99,11 @@ export const getOnlineUsers = async (req: Request, res: Response) => {
 }
 
 
-/*** GET ALL USERS INCLUDING ONLINE AND OFFLINE (excluding current user)
-  *   @route  GET /users?page=1&limit=10
-  *  @access Private
-*/
-export const getAllUsers = async (req: Request, res: Response) => {
+/*** GET ALL USERS / SEARCH USERS (excluding current user)
+ *   @route  GET /users?search=abhi&page=1&limit=10
+ *   @access Private
+ */
+export const getUsers = async (req: Request, res: Response) => {
     try {
         if (!req.user) {
             return res.status(401).json({
@@ -119,28 +112,36 @@ export const getAllUsers = async (req: Request, res: Response) => {
             });
         }
 
-        // pagination
+        const search = String(req.query.search || "").trim();
+
         const page = Math.max(Number(req.query.page) || 1, 1);
         const limit = Math.max(Number(req.query.limit) || 6, 1);
-
         const safeLimit = Math.min(limit, 50);
         const skip = (page - 1) * safeLimit;
 
-
-        const allUsers = await User.find({
+        const filter: any = {
             _id: { $ne: req.user.id }
-        })
-            .select("name email avatar isOnline lastSeen")
-            .skip(skip).limit(safeLimit)
-            .sort({ isOnline: -1, lastSeen: -1 })
+        };
 
-        // scroll 
-        const hasMore = allUsers.length === safeLimit;
+        if (search) {
+            filter.$or = [
+                { name: { $regex: search, $options: "i" } },
+                { email: { $regex: search, $options: "i" } }
+            ];
+        }
+
+        const users = await User.find(filter)
+            .select("name email avatar isOnline lastSeen")
+            .sort({ isOnline: -1, lastSeen: -1 })
+            .skip(skip)
+            .limit(safeLimit);
+
+        const hasMore = users.length === safeLimit;
 
         return res.status(200).json({
             success: true,
             message: "Users fetched successfully",
-            users: allUsers,
+            users,
             hasMore
         });
 
@@ -151,60 +152,6 @@ export const getAllUsers = async (req: Request, res: Response) => {
         });
     }
 };
-
-
-/***  SEARCH USERS
-  *   @route   GET /users?search=abhi&page=1&limit=10
-  *   @access  Public
-*/
-export const searchUsers = async (req: Request, res: Response) => {
-    try {
-
-        const search = String(req.query.search || "").trim();
-
-        const page = Math.max(Number(req.query.page) || 1, 1);
-        const limit = Math.max(Number(req.query.limit) || 10, 1);
-        const safeLimit = Math.min(limit, 50);
-        const skip = (page - 1) * safeLimit;
-
-
-
-        const filter: any = {};
-
-        // exclude current user if logged in
-        if (req.user) {
-            filter._id = { $ne: req.user.id };
-        }
-
-        if (search) {
-            filter.$or = [
-                { name: { $regex: search, $options: "i" } },
-                { email: { $regex: search, $options: "i" } }
-            ];
-        }// options - case sensitive- match with all captial and lowercase
-        // regex helps with partial search
-
-        const users = await User.find(filter)
-            .select("name email avatar isOnline lastSeen")
-            .sort({ isOnline: -1, lastSeen: -1 })
-            .skip(skip)
-            .limit(safeLimit);
-
-
-        return res.status(200).json({
-            success: true,
-            message: "Users fetched successfully",
-            users
-        });
-
-
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server Error"
-        });
-    }
-}
 
 
 /***  GET USER BY ID
