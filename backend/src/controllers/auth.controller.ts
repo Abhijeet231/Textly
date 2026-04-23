@@ -5,10 +5,11 @@ import { type Request, type Response } from "express"
 import { uploadOnCloudinary } from "../utils/cloudinary.js"
 
 
-/**   REGISTER USER
- 
-POST  /api/v1/auth/register 
- **/
+
+/***   REGISTER USER
+   *   @route   POST /api/v1/auth/register
+   *   @access  Public
+*/
 export const registerController = async (req: Request, res: Response): Promise<void> => {
   try {
 
@@ -95,10 +96,10 @@ export const registerController = async (req: Request, res: Response): Promise<v
 };
 
 
-/**   LOGIN USER
- 
-POST  /api/v1/auth/login 
- **/
+/***   LOGIN USER
+   *   @route   POST /api/v1/auth/login
+   *   @access  Public
+*/
 
 export const loginController = async (
   req: Request,
@@ -167,11 +168,10 @@ export const loginController = async (
 };
 
 
-
-/**   LOGOUT USER
- 
-POST  /api/v1/auth/logout 
- **/
+/***   LOGOUT USER
+   *   @route   POST /api/v1/auth/logout
+   *   @access  Private
+*/
 export const logoutController = async (
   req: Request,
   res: Response
@@ -209,10 +209,10 @@ export const logoutController = async (
 };
 
 
-/**   REFRESH USER'S ACCESS TOEKN
- 
-POST  /api/v1/auth/logout 
- **/
+/***   REFRESH USER'S ACCESS TOEKN
+   *   @route   POST /api/v1/auth/refresh
+   *   @access  Public
+*/
 export const refreshUser = async (req: Request, res: Response) => {
 
   try {
@@ -274,4 +274,3 @@ export const refreshUser = async (req: Request, res: Response) => {
 
 
 }
-
