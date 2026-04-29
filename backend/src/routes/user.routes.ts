@@ -1,6 +1,6 @@
 import { Router } from "express";
 import verifyJwt from "../middlewares/auth.middleware.js";
-import { getCurrentUser, getOnlineUsers,getUsers , getUserById } from "../controllers/user.controller.js";
+import { getCurrentUser, getOnlineUsers, getUsers, getUserById } from "../controllers/user.controller.js";
 import validate from "../middlewares/validate.middleware.js";
 import { onlineUsersQuerySchema, getUsersQuerySchema, getUserByIdParamsSchema } from "../validations/user.validations.js";
 
@@ -10,12 +10,12 @@ const router = Router();
 router.get("/me", verifyJwt, getCurrentUser);
 
 // get all online users
-router.get("/online",validate(onlineUsersQuerySchema), verifyJwt, getOnlineUsers);
+router.get("/online", verifyJwt, validate(onlineUsersQuerySchema), getOnlineUsers);
 
 // get all registered users & search any user
-router.get("/",validate(getUsersQuerySchema), verifyJwt, getUsers);
+router.get("/", verifyJwt, validate(getUsersQuerySchema), getUsers);
 
 // get user by ID
-router.get('/:id',validate(getUserByIdParamsSchema), verifyJwt, getUserById);
+router.get('/:id', verifyJwt, validate(getUserByIdParamsSchema), getUserById);
 
-export  default router;
+export default router;

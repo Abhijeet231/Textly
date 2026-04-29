@@ -10,17 +10,18 @@ const main = async () => {
 
     try {
         let port = env.PORT || 3000;
-    
+
         // Connecting to Database
         await dbConnect();
         const app = createApp();
-    
+
         const server = http.createServer(app);
-    
+
         // socket instance
         const io = initSocket(server)
 
-        server.listen(port, () =>{
+
+        server.listen(port, () => {
             console.log(`Server is running on Port ${port}`)
         })
     } catch (error) {

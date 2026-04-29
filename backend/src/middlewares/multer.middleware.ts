@@ -5,11 +5,11 @@ import path from "node:path";
 // storage config
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "public/temp"); 
+    cb(null, "public/temp");
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
-const uniqueName = Date.now() + ext;
+    const uniqueName = Date.now() + ext;
     cb(null, uniqueName);
   },
 });
@@ -17,7 +17,7 @@ const uniqueName = Date.now() + ext;
 // profile photo handling
 export const uploadProfile = multer({
   storage,
-  limits: { fileSize: 2 * 1024 * 1024 }, 
+  limits: { fileSize: 2 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith("image/")) {
       cb(null, true);
@@ -30,16 +30,16 @@ export const uploadProfile = multer({
 // Chat upload handling
 export const uploadChat = multer({
   storage,
-  limits: { fileSize:20 * 1024 * 1024 }, 
+  limits: { fileSize: 20 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
-  if (
-    file.mimetype.startsWith("image/") ||
-    file.mimetype.startsWith("video/") ||
-    file.mimetype === "application/pdf"
-  ) {
-    cb(null, true);
-  } else {
-    cb(new Error("Invalid file type"));
+    if (
+      file.mimetype.startsWith("image/") ||
+      file.mimetype.startsWith("video/") ||
+      file.mimetype === "application/pdf"
+    ) {
+      cb(null, true);
+    } else {
+      cb(new Error("Invalid file type"));
+    }
   }
-}
 });
