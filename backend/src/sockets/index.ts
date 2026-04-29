@@ -18,6 +18,9 @@ export const initSocket = (server: any) => {
     },
   });
 
+  // Map to keep track of online users and their socket IDs for quick lookup
+  const onlineUsers = new Map<string, Set<string>>(); 
+
   // Auth middleware — runs before every connection
   io.use(async (socket, next) => {
     try {
@@ -34,10 +37,19 @@ export const initSocket = (server: any) => {
   io.on("connection", (socket) => {
     console.log("User Connected:", socket.id, "| User:", socket.data.user.id);
 
+    const userId = socket.data.user.id as string;
+
+    // Add socket ID to the set of connections for this user
+    if (!onlineUsers.has(userId)) {
+      onlineUsers.set(userId, new Set());
+    }
+    onlineUsers.get(userId)!.add(socket.id);
+
+    // Pass the map down to handlers that need it
     registerConversationHandlers(io, socket);
     registerMessageHandlers(io, socket);
     registerTypingHandlers(io, socket);
-    registerDisconnectHandler(io, socket);
+    registerDisconnectHandler(io, socket, onlineUsers);
   });
 
   return io;
