@@ -108,7 +108,7 @@ export const loginController = async (
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select("+password");
 
     if (!user) {
       res.status(404).json({
@@ -135,8 +135,8 @@ export const loginController = async (
     };
 
     // Generating Tokens
-    const accessToken = await generateAccessToken(payload);
-    const refreshToken = await generateRefreshToken(payload);
+    const accessToken =  generateAccessToken(payload);
+    const refreshToken =  generateRefreshToken(payload);
 
     // Addign refreshToken & changing online status
     user.refreshToken = refreshToken;

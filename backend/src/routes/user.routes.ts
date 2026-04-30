@@ -10,12 +10,12 @@ const router = Router();
 router.get("/me", verifyJwt, getCurrentUser);
 
 // get all online users
-router.get("/online", verifyJwt, validate(onlineUsersQuerySchema), getOnlineUsers);
+router.get("/online", verifyJwt, validate(onlineUsersQuerySchema, "query"), getOnlineUsers);
 
 // get all registered users & search any user
-router.get("/", verifyJwt, validate(getUsersQuerySchema), getUsers);
+router.get("/", verifyJwt, validate(getUsersQuerySchema, "query"), getUsers);
 
 // get user by ID
-router.get('/:id', verifyJwt, validate(getUserByIdParamsSchema), getUserById);
+router.get('/:id', verifyJwt, validate(getUserByIdParamsSchema, "params"), getUserById);
 
-export default router;
+export default router; 
