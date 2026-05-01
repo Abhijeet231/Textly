@@ -63,8 +63,8 @@ export const registerController = async (req: Request, res: Response): Promise<v
     };
 
     // Generate Tokens
-    const accessToken = await generateAccessToken(payload);
-    const refreshToken = await generateRefreshToken(payload);
+    const accessToken =  generateAccessToken(payload);
+    const refreshToken =  generateRefreshToken(payload);
 
     // Save refreshToken in the DB
     user.refreshToken = refreshToken;
