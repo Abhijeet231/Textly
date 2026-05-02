@@ -59,7 +59,7 @@ const Navbar = () => {
         {/* Desktop auth buttons */}
         <div className="hidden md:flex items-center gap-2">
           <Link
-            to="/login"
+            to="/auth/login"
             className="px-4.5 py-1.75 text-sm font-medium text-zinc-500 border border-zinc-200
               rounded-[9px] hover:border-violet-400 hover:text-violet-600 hover:bg-violet-50/50
               transition-all duration-150"
@@ -67,7 +67,7 @@ const Navbar = () => {
             Log in
           </Link>
           <Link
-            to="/register"
+            to="/auth/register"
             className="px-4.5 py-1.75 text-sm font-semibold text-white bg-violet-600 border
               border-violet-600 rounded-[9px] hover:bg-violet-700 hover:border-violet-700
               hover:shadow-[0_4px_14px_rgba(124,58,237,0.3)] hover:-translate-y-px
@@ -113,7 +113,7 @@ const Navbar = () => {
 
           <div className="flex gap-2 mt-3 pt-3 border-t border-zinc-100">
             <Link
-              to="/login"
+              to="/auth/login"
               onClick={() => setIsOpen(false)}
               className="flex-1 text-center px-4 py-1.75 text-sm font-medium text-zinc-500
                 border border-zinc-200 rounded-[9px] hover:border-violet-400
@@ -122,7 +122,7 @@ const Navbar = () => {
               Log in
             </Link>
             <Link
-              to="/register"
+              to="/auth/register"
               onClick={() => setIsOpen(false)}
               className="flex-1 text-center px-4 py-1.75 text-sm font-semibold text-white
                 bg-violet-600 rounded-[9px] hover:bg-violet-700 transition-all duration-150"
