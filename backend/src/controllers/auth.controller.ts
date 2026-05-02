@@ -230,7 +230,7 @@ export const refreshUser = async (req: Request, res: Response) => {
     }
 
     // Verify Token
-    let verified = await verifyRefreshToken(token);
+    let verified =  verifyRefreshToken(token);
 
     if (!verified) {
       return res.status(401).json({

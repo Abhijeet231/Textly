@@ -40,6 +40,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       setStatus("loading");
       const res = await getMe();
       setUser(res.data.data);
+      console.log("This is the raw data while checkign pre existing sessions", res)
       setStatus("authenticated");
     } catch {
       setUser(null);
@@ -63,6 +64,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       }
 
       setUser(res.data.user); // matches your backend response shape
+      console.log("Logged In user data", res)
       setStatus("authenticated");
     } catch (error: unknown) {
       toast.error("Login Error");
