@@ -21,6 +21,15 @@ export const registerSchema = z.object({
   confirmPassword: z
     .string()
     .min(1, "Please confirm your password"),
+
+   avatar: z
+    .instanceof(File)
+    .refine((f) => f.size <= 3 * 1024 * 1024, "Image must be under 3MB")
+    .refine(
+      (f) => ["image/jpeg", "image/png", "image/webp"].includes(f.type),
+      "Only JPG, PNG or WEBP allowed"
+    )
+    .optional(), 
 })
 .refine((data) => data.password === data.confirmPassword, {
   message: "Passwords do not match",

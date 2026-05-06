@@ -37,7 +37,7 @@ const Login = () => {
       justify-center px-4 py-12">
 
       {/* Soft glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px]
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-125 h-75
         bg-violet-100/50 rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative w-full max-w-md">
@@ -48,7 +48,7 @@ const Login = () => {
             <span className="text-2xl font-bold tracking-tight text-zinc-900">
               Text<span className="text-violet-600">ly</span>
             </span>
-            <span className="w-[7px] h-[7px] rounded-full bg-violet-600 mb-[14px] ml-[2px]" />
+            <span className="w-1.75 h-1.75 rounded-full bg-violet-600 mb-3.5 ml-0.5" />
           </Link>
           <p className="text-sm text-zinc-400 mt-2">Welcome back — sign in to continue</p>
         </div>

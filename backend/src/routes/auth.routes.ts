@@ -8,7 +8,7 @@ import validate from "../middlewares/validate.middleware.js";
 const router = Router();
 
 // regiser
-router.post("/register", validate(registerSchema), uploadProfile.single("avatar"), registerController)
+router.post("/register", uploadProfile.single("avatar"),validate(registerSchema), registerController)
 
 // login
 router.post("/login",validate(loginSchema), loginController);
