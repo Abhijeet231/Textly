@@ -23,8 +23,10 @@ export interface AuthUser {
     _id: string;
     name: string;
     email: string;
-    avatar: Avatar | Record<string, never>; // {} when no avatar uploaded
+    avatar?: Avatar | Record<string, never>; // {} when no avatar uploaded
     isOnline: boolean;
+    lastSeen?: string ;   // add
+    createdAt?: string;
 }
 
 // ── Responses ─────────────────────────────────────────────────
