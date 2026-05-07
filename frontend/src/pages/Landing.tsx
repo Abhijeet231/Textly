@@ -59,7 +59,7 @@ const Landing = () => {
 
         <div className="flex items-center gap-3 flex-wrap justify-center animate-slide-up delay-200">
           <Link
-            to="/register"
+            to="auth/register"
             className="inline-flex items-center gap-2 px-6 py-3 bg-violet-600 text-white
               text-sm font-semibold rounded-xl hover:bg-violet-700
               hover:shadow-[0_6px_20px_rgba(124,58,237,0.35)] hover:-translate-y-0.5
@@ -163,7 +163,7 @@ const Landing = () => {
             <p className="text-violet-200 text-sm">Free forever. No credit card needed.</p>
           </div>
           <Link
-            to="/register"
+            to="/auth/register"
             className="inline-flex items-center gap-2 px-6 py-3 bg-white text-violet-700
               text-sm font-semibold rounded-xl hover:bg-violet-50 transition-all duration-200
               whitespace-nowrap shrink-0"

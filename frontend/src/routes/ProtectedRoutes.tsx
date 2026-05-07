@@ -12,7 +12,7 @@ const ProtectedRoutes = () => {
     );
   }
   if (status !== "authenticated") {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/auth/login" replace />;
   }
 
   return <Outlet />;

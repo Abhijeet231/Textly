@@ -24,7 +24,7 @@ const Footer = () => {
         {/* Links */}
         <ul className="flex items-center gap-1 flex-wrap justify-center">
           {links.map(({ label, to }) => (
-            <li key={to}>
+              <li key={`${label}-${to}`}>
               <Link
                 to={to}
                 className="text-[13px] font-medium text-zinc-400 px-2.5 py-1 rounded-md
