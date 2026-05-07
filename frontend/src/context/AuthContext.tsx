@@ -39,8 +39,11 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     try {
       setStatus("loading");
       const res = await getMe();
-      setUser(res.data.data);
-      console.log("This is the raw data while checkign pre existing sessions", res)
+      setUser(res.data.user);
+      console.log(
+        "This is the raw data while checkign pre existing sessions",
+        res,
+      );
       setStatus("authenticated");
     } catch {
       setUser(null);
@@ -63,8 +66,12 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
 
+      // Save both tokens
+      localStorage.setItem("accessToken", res.data.accessToken);
+      localStorage.setItem("refreshToken", res.data.refreshToken);
+
       setUser(res.data.user); // matches your backend response shape
-      console.log("Logged In user data", res)
+      console.log("Logged In user data", res);
       setStatus("authenticated");
     } catch (error: unknown) {
       toast.error("Login Error");
@@ -77,6 +84,8 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     try {
       await logoutService();
     } finally {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
       // always clear local state even if API call fails
       setUser(null);
       setStatus("unauthenticated");

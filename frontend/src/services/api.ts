@@ -13,6 +13,17 @@ const api = axios.create({
 
 let isRefreshing = false;
 
+// REQUEST INTERCEPTOR TO ADD ACCESS TOKEN
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("accessToken");
+  if (token) {
+    config.headers["Authorization"] = `Bearer ${token}`;
+  }
+  return config;
+});
+
+
+// RESPONSE INTERCEPTOR FOR TOKEN REFRESH
 api.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {

@@ -109,7 +109,14 @@ const Register = () => {
   const onSubmit = async (data: RegisterFormData) => {
     try {
       const { confirmPassword, ...payload } = data;
-      await registerUser(payload);
+      const res = await registerUser(payload);
+
+      // save tokens
+      if (res.data.success) {
+        localStorage.setItem("accessToken", res.data.accessToken);
+        localStorage.setItem("refreshToken", res.data.refreshToken);
+      }
+
       await login({ email: data.email, password: data.password });
       toast.success("Account created! Welcome to Textly.");
       navigate("/chat");
@@ -164,8 +171,8 @@ const Register = () => {
                       errors.avatar
                         ? "border-red-300 bg-red-50"
                         : avatarPreview
-                        ? "border-violet-300"
-                        : "border-zinc-200 bg-zinc-50 hover:border-violet-400 hover:bg-violet-50"
+                          ? "border-violet-300"
+                          : "border-zinc-200 bg-zinc-50 hover:border-violet-400 hover:bg-violet-50"
                     }`}
                 >
                   {avatarPreview ? (
@@ -198,8 +205,7 @@ const Register = () => {
               </div>
 
               <p className="text-xs text-zinc-400">
-                Profile photo{" "}
-                <span className="text-zinc-300">— optional</span>
+                Profile photo <span className="text-zinc-300">— optional</span>
               </p>
 
               {errors.avatar && (
