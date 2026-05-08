@@ -34,12 +34,9 @@ const ChatWindow = ({
   const other = conversation.participants.find((p) => p._id !== currentUserId)
   const isOtherTyping = other ? !!typingUsers[other._id] : false
 
-  const initials = other?.name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2) ?? "?"
+ const initials = other?.name
+  ? other.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
+  : "?"
 
   // Auto scroll to bottom on new messages
   useEffect(() => {

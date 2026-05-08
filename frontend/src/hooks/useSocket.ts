@@ -98,24 +98,46 @@ export const useSocket = (accessToken: string | null) => {
   }, [accessToken])
 
   // ── Open conversation ─────────────────────────────────────────
-  const openConversation = useCallback(
-    (participantId: string): Promise<Conversation> => {
-      return new Promise((resolve, reject) => {
-        socketRef.current?.emit(
-          "conversation:open",
-          { participantId },
-          (res: { conversation?: Conversation; error?: string }) => {
-            if (res.error) return reject(res.error)
-            if (res.conversation) {
-              setActiveConversation(res.conversation)
-              resolve(res.conversation)
-            }
+const openConversation = useCallback(
+  (participantId: string): Promise<Conversation> => {
+    return new Promise((resolve, reject) => {
+      socketRef.current?.emit(
+        "conversation:open",
+        { participantId },
+        (res: { conversation?: Conversation; error?: string }) => {
+          if (res.error) return reject(res.error)
+          if (res.conversation) {
+            setActiveConversation(res.conversation)
+
+            // If participants aren't populated (just IDs), patch them
+            // by re-fetching the conversation list which does populate
+            socketRef.current?.emit(
+              "conversation:list",
+              (listRes: { conversations?: Conversation[] }) => {
+                if (listRes.conversations) {
+                  setConversations(listRes.conversations)
+                  // Find the fully populated version of this conversation
+                  const populated = listRes.conversations.find(
+                    (c) => c._id === res.conversation!._id
+                  )
+                  if (populated) {
+                    setActiveConversation(populated)
+                    resolve(populated)
+                  } else {
+                    resolve(res.conversation!)
+                  }
+                } else {
+                  resolve(res.conversation!)
+                }
+              }
+            )
           }
-        )
-      })
-    },
-    []
-  )
+        }
+      )
+    })
+  },
+  []
+)
 
   // ── Load messages ─────────────────────────────────────────────
   const loadMessages = useCallback(

@@ -29,7 +29,7 @@ const Chat = () => {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
   const [page, setPage] = useState(1)
 
-  // When a conversation is selected — load messages + mark seen
+  // Select conversation — load messages + mark seen
   const handleSelectConversation = async (conversation: Conversation) => {
     setActiveConversation(conversation)
     setPage(1)
@@ -37,13 +37,13 @@ const Chat = () => {
     markSeen(conversation._id)
   }
 
-  // New chat by userId
-  const handleNewChat = async (participantId: string) => {
+  // Start chat from People tab — open/create conversation then select it
+  const handleStartChat = async (participantId: string) => {
     try {
       const conversation = await openConversation(participantId)
       handleSelectConversation(conversation)
     } catch {
-      // openConversation rejects with error string
+      // silently fail — openConversation rejects with error string
     }
   }
 
@@ -53,7 +53,7 @@ const Chat = () => {
     try {
       await sendMessage(activeConversation._id, text)
     } catch {
-      // error handled inside hook
+      // handled inside hook
     }
   }
 
@@ -65,7 +65,7 @@ const Chat = () => {
     loadMessages(activeConversation._id, nextPage)
   }
 
-  // Typing
+  // Typing events
   const handleTyping = () => {
     if (activeConversation) emitTyping(activeConversation._id)
   }
@@ -74,7 +74,7 @@ const Chat = () => {
     if (activeConversation) emitTypingStop(activeConversation._id)
   }
 
-  // Mark seen when new messages arrive in active conversation
+  // Auto mark-seen on new incoming messages
   useEffect(() => {
     if (activeConversation && messages.length > 0) {
       markSeen(activeConversation._id)
@@ -92,14 +92,13 @@ const Chat = () => {
         currentUserId={user._id}
         activeConversationId={activeConversation?._id ?? null}
         onSelectConversation={handleSelectConversation}
-        onNewChat={handleNewChat}
+        onStartChat={handleStartChat}
         mobileOpen={mobileSidebarOpen}
         onCloseMobile={() => setMobileSidebarOpen(false)}
       />
 
       {/* Main area */}
       <main className="flex-1 flex flex-col min-w-0 bg-white">
-
         {activeConversation ? (
           <ChatWindow
             conversation={activeConversation}
@@ -117,10 +116,9 @@ const Chat = () => {
             }}
           />
         ) : (
-          // Empty state
           <div className="flex-1 flex flex-col items-center justify-center gap-4 px-6">
 
-            {/* Mobile — show sidebar button */}
+            {/* Mobile sidebar toggle */}
             <button
               onClick={() => setMobileSidebarOpen(true)}
               className="md:hidden mb-2 flex items-center gap-2 px-4 py-2 text-sm
@@ -139,12 +137,12 @@ const Chat = () => {
               <h2 className="text-base font-semibold text-zinc-800 mb-1">
                 No conversation selected
               </h2>
-              <p className="text-sm text-zinc-400 max-w-xs">
-                Pick a conversation from the sidebar or start a new one by pasting a user ID.
+              <p className="text-sm text-zinc-400 max-w-xs leading-relaxed">
+                Pick a conversation from Chats or find someone in People to start talking.
               </p>
             </div>
 
-            {/* Connection status */}
+            {/* Socket connection pill */}
             <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs
               font-medium border mt-2
               ${connected
