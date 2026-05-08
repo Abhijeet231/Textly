@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react"
-import { ArrowLeft, MoreVertical } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 import type { Conversation, Message } from "../../types/chat"
 import MessageBubble from "./selected/MessageBubble"
 import MessageInput from "./selected/MessageInput"
@@ -74,7 +74,7 @@ const ChatWindow = ({
 
       {/* Header */}
       <div className="flex items-center gap-3 px-5 py-3.5 bg-white border-b
-        border-zinc-100 flex-shrink-0">
+        border-zinc-100 shrink-0">
         {/* Mobile back */}
         <button
           onClick={onBack}
@@ -180,7 +180,7 @@ const ChatWindow = ({
       </div>
 
       {/* Input */}
-      <div className="flex-shrink-0">
+      <div className="shrink-0">
         <MessageInput
           conversationId={conversation._id}
           onSend={onSend}
