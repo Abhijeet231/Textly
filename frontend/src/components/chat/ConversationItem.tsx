@@ -42,7 +42,7 @@ const ConversationItem = ({ conversation, currentUserId, isActive, onClick }: Pr
         }`}
     >
       {/* Avatar */}
-      <div className="relative flex-shrink-0">
+      <div className="relative shrink-0">
         {other.avatar?.url ? (
           <img
             src={other.avatar.url}
@@ -68,7 +68,7 @@ const ConversationItem = ({ conversation, currentUserId, isActive, onClick }: Pr
             ${isActive ? "text-violet-700" : "text-zinc-800"}`}>
             {other.name}
           </p>
-          <span className="text-[11px] text-zinc-400 flex-shrink-0 ml-2">{timeLabel}</span>
+          <span className="text-[11px] text-zinc-400 shrink-0 ml-2">{timeLabel}</span>
         </div>
         <p className="text-xs text-zinc-400 truncate">{lastText}</p>
       </div>

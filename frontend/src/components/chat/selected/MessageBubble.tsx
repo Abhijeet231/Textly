@@ -29,7 +29,7 @@ const MessageBubble = ({ message, isOwn, currentUserId }: Props) => {
                 key={i}
                 src={img.url}
                 alt="attachment"
-                className="max-w-[200px] rounded-xl object-cover border border-zinc-100"
+                className="max-w-50 rounded-xl object-cover border border-zinc-100"
               />
             ))}
           </div>

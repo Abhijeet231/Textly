@@ -69,7 +69,7 @@ const MessageInput = ({ conversationId, onSend, onTyping, onTypingStop }: Props)
         <button
           onClick={handleSend}
           disabled={!text.trim()}
-          className="flex-shrink-0 w-8 h-8 rounded-xl bg-violet-600 text-white
+          className="shrink-0 w-8 h-8 rounded-xl bg-violet-600 text-white
             flex items-center justify-center hover:bg-violet-700 transition-all
             duration-150 disabled:opacity-40 disabled:cursor-not-allowed mb-0.5"
         >
