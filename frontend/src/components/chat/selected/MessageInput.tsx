@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react"
+import { useState, useRef } from "react"
 import { Send } from "lucide-react"
 
 interface Props {
@@ -8,7 +8,7 @@ interface Props {
   onTypingStop: () => void
 }
 
-const MessageInput = ({ conversationId, onSend, onTyping, onTypingStop }: Props) => {
+const MessageInput = ({  onSend, onTyping, onTypingStop }: Props) => {
   const [text, setText] = useState("")
   const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isTypingRef = useRef(false)
